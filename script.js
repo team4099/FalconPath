@@ -99,7 +99,7 @@ class Waypoint {
 
 	toString() {
 		var comment = (this.comment.length > 0) ? " //" + this.comment : "";
-		return "sWaypoints.add(new Waypoint("+this.position.x+","+this.position.y+","+this.radius+","+this.speed+"));" + comment;
+		return "sWaypoints.add(Waypoint("+this.position.x+","+this.position.y+","+this.radius+","+this.speed+"));" + comment;
 	}
 }
 
@@ -421,37 +421,33 @@ function getDataString() {
 	for(var i=0; i<waypoints.length; i++) {
 		pathInit += "        " + waypoints[i].toString() + "\n";
 	}
-	var startPoint = "new Translation2d(" + waypoints[0].position.x + ", " + waypoints[0].position.y + ")";
+	var startPoint = "Translation2d(" + waypoints[0].position.x + ", " + waypoints[0].position.y + ")";
 	var importStr = "WAYPOINT_DATA: " + JSON.stringify(waypoints);
 	var isReversed = $("#isReversed").is(':checked');
-	var str = `package com.team254.frc2017.paths;
+	var str = `package org.usfirst.frc.team4099.paths
 
-import java.util.ArrayList;
+import java.util.ArrayList
 
-import com.team254.frc2017.paths.PathBuilder.Waypoint;
-import com.team254.lib.util.control.Path;
-import com.team254.lib.util.math.RigidTransform2d;
-import com.team254.lib.util.math.Rotation2d;
-import com.team254.lib.util.math.Translation2d;
+import org.usfirst.frc.team4099.paths.PathBuilder.Waypoint
+import org.usfirst.frc.team4099.lib.util.control.Path
+import org.usfirst.frc.team4099.lib.util.math.RigidTransform2d
+import org.usfirst.frc.team4099.lib.util.math.Rotation2dx
+import org.usfirst.frc.team4099.lib.util.math.Translation2d
 
-public class ${title} implements PathContainer {
+class ${title} : PathContainer {
     
     @Override
-    public Path buildPath() {
-        ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+    fun buildPath() : Path {
+        sWaypoints : ArrayList<Waypoint> = ArrayList<Waypoint>()
 ${pathInit}
-        return PathBuilder.buildPathFromWaypoints(sWaypoints);
+        return PathBuilder.buildPathFromWaypoints(sWaypoints)
     }
     
     @Override
-    public RigidTransform2d getStartPose() {
-        return new RigidTransform2d(${startPoint}, Rotation2d.fromDegrees(180.0)); 
-    }
+    fun getStartPose() : RigidTransform2d = RigidTransform2d(${startPoint}, Rotation2d.fromDegrees(180.0))
 
     @Override
-    public boolean isReversed() {
-        return ${isReversed}; 
-    }
+    fun isReversed() : boolean = ${isReversed}
 	// ${importStr}
 	// IS_REVERSED: ${isReversed}
 	// FILE_NAME: ${title}
@@ -463,13 +459,13 @@ function exportData() {
 	update();
 	var title = ($("#title").val().length > 0) ? $("#title").val() : "UntitledPath";
 	var blob = new Blob([getDataString()], {type: "text/plain;charset=utf-8"});
-	saveAs(blob, title+".java");
+	saveAs(blob, title+".kt");
 }
 
 function showData() {
 	update();
 	var title = ($("#title").val().length > 0) ? $("#title").val() : "UntitledPath";
-	$("#modalTitle").html(title + ".java");
+	$("#modalTitle").html(title + ".kt");
 	$(".modal > pre").text(getDataString());
 	showModal();
 }
