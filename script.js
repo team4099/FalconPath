@@ -1,11 +1,11 @@
 var waypoints = [];
 var ctx;
-var width = 1656; //pixels
-var height = 823; //pixels
-var fieldWidth = 652; // in inches
-var fieldHeight = 324; // in inches
-var robotWidth = 35.45; //inches
-var robotHeight = 33.325; //inches
+var width = 1286; //pixels
+var height = 647; //pixels
+var fieldWidth = 648; // in inches
+var fieldHeight = 323.38; // in inches
+var robotWidth = 28 + 2 * 4; //inches
+var robotHeight = 33 + 2 * 4; //inches
 var pointRadius = 5;
 var turnRadius = 30;
 var kEpsilon = 1E-9;
@@ -17,7 +17,7 @@ var maxSpeed = 120;
 var maxSpeedColor = [0, 255, 0];
 var minSpeed = 0;
 var minSpeedColor = [255, 0, 0];
-var pathFillColor = "rgba(150, 150, 150, 0.5)";
+var pathFillColor = "rgba(250, 250, 250, 0.25)";
 
 class Translation2d {
 	constructor(x, y) {
@@ -46,7 +46,7 @@ class Translation2d {
 	}
 
 	draw(color) {
-		color = color || "#f72c1c";
+		color = color || "#cf5353";
 		ctx.beginPath();
 		ctx.arc(this.drawX, this.drawY, pointRadius, 0, 2 * Math.PI, false);
 		ctx.fillStyle = color;
@@ -119,9 +119,9 @@ class Line {
         
 		try {
         	var grad = ctx.createLinearGradient(this.start.drawX, this.start.drawY, this.end.drawX, this.end.drawY);
-	grad.addColorStop(0, getColorForSpeed(this.pointB.speed));
-		grad.addColorStop(1, getColorForSpeed(getNextSpeed(this.pointB)));
-		ctx.strokeStyle = grad;
+			grad.addColorStop(0, getColorForSpeed(this.pointB.speed));
+			grad.addColorStop(1, getColorForSpeed(getNextSpeed(this.pointB)));
+			ctx.strokeStyle = grad;
 		} catch (e) {
 			ctx.strokeStyle = "#00ff00"
 		}
@@ -209,7 +209,7 @@ class Arc {
 		var angle = Translation2d.angle(sTrans, eTrans);
 		var length = angle * this.radius;
 		for(var i=0; i<length; i+=this.radius/100) {
-		drawRotatedRect(this.center.translate(new Translation2d(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
+			drawRotatedRect(this.center.translate(new Translation2d(this.radius*Math.cos(sAngle-i/length*angle),-this.radius*Math.sin(sAngle-i/length*angle))), robotHeight, robotWidth, sAngle-i/length*angle+Math.PI/2, null, pathFillColor, true);
 		}
 
 		
@@ -223,13 +223,13 @@ class Arc {
 
 
 function init() { 
-	$("#field").css("width", (width / 1.5) + "px");
-	$("#field").css("height", (height / 1.5) + "px");
+	$("#field").css("width", width + "px");
+	$("#field").css("height", height + "px");
 	ctx = document.getElementById('field').getContext('2d')
     ctx.canvas.width = width;
     ctx.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle="#FF0000";
+    ctx.fillStyle="#CF5353";
     image = new Image();
     image.src = 'field.png';
     image.onload = function(){
@@ -249,7 +249,7 @@ function init() {
 
 function clear() {
     ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle="#FF0000";
+    ctx.fillStyle="#CF5353";
     if(flipped)
     	ctx.drawImage(imageFlipped, 0, 0, width, height);
     else
