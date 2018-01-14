@@ -444,7 +444,8 @@ function getDataString() {
 	var startPoint = "Translation2d(" + waypoints[0].position.x + ", " + waypoints[0].position.y + ")";
 	var importStr = "WAYPOINT_DATA: " + JSON.stringify(waypoints);
 	var isReversed = $("#isReversed").is(':checked');
-	var str = `package org.usfirst.frc.team4099.paths
+	if ($("#useKotlin").is(':checked')) {
+		var str = `package org.usfirst.frc.team4099.paths
 
 import java.util.ArrayList
 
@@ -456,22 +457,53 @@ import org.usfirst.frc.team4099.lib.util.math.Translation2d
 
 class ${title} : PathContainer {
     
-    @Override
-    fun buildPath() : Path {
+    override fun buildPath() : Path {
         sWaypoints : ArrayList<Waypoint> = ArrayList<Waypoint>()
 ${pathInit}
         return PathBuilder.buildPathFromWaypoints(sWaypoints)
     }
     
-    @Override
-    fun getStartPose() : RigidTransform2d = RigidTransform2d(${startPoint}, Rotation2d.fromDegrees(180.0))
+    override fun getStartPose() : RigidTransform2d = RigidTransform2d(${startPoint}, Rotation2d.fromDegrees(180.0))
 
-    @Override
-    fun isReversed() : boolean = ${isReversed}
+    override fun isReversed() : boolean = ${isReversed}
 	// ${importStr}
 	// IS_REVERSED: ${isReversed}
 	// FILE_NAME: ${title}
 }`
+	}
+	else {
+		var str = `package org.usfirst.frc.team4099.paths;
+
+import java.util.ArrayList;
+
+import org.usfirst.frc.team4099.paths.PathBuilder.Waypoint;
+import org.usfirst.frc.team4099.lib.util.control.Path;
+import org.usfirst.frc.team4099.lib.util.math.RigidTransform2d;
+import org.usfirst.frc.team4099.lib.util.math.Rotation2dx;
+import org.usfirst.frc.team4099.lib.util.math.Translation2d;
+
+public class ${title} implements PathContainer {
+    
+    @Override
+    public Path buildPath() {
+        ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+${pathInit}
+        return PathBuilder.buildPathFromWaypoints(sWaypoints);
+    }
+    
+    @Override
+    public RigidTransform2d getStartPose() {
+        return new RigidTransform2d(${startPoint}, Rotation2d.fromDegrees(180.0)); 
+    }
+    @Override
+    public boolean isReversed() {
+        return ${isReversed}; 
+    }
+	// ${importStr}
+	// IS_REVERSED: ${isReversed}
+	// FILE_NAME: ${title}
+}`
+	}
 	return str;
 }
 
@@ -479,13 +511,13 @@ function exportData() {
 	update();
 	var title = ($("#title").val().length > 0) ? $("#title").val() : "UntitledPath";
 	var blob = new Blob([getDataString()], {type: "text/plain;charset=utf-8"});
-	saveAs(blob, title+".kt");
+	saveAs(blob, title+($("#useKotlin").is(':checked')?".kt":"java"));
 }
 
 function showData() {
 	update();
 	var title = ($("#title").val().length > 0) ? $("#title").val() : "UntitledPath";
-	$("#modalTitle").html(title + ".kt");
+	$("#modalTitle").html(title + ($("#useKotlin").is(':checked')?".kt":".java"));
 	$(".modal > pre").text(getDataString());
 	showModal();
 }

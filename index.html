@@ -159,6 +159,67 @@
 	td > button:hover {
 		background-color: #f85a4b;
 	}
+
+	#checkboxes {
+		font-size: 15px;
+		float: right;
+	}
+
+	.switch {
+		position: relative;
+		display: inline-block;
+		width: 30px;
+		height: 17px;
+	}
+
+	.switch input {display:none;}
+
+	.slider {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #ccc;
+		-webkit-transition: .15s;
+		transition: .15s;
+	}
+
+	.slider:before {
+		position: absolute;
+		content: "";
+		height: 11px;
+		width: 11px;
+		left: 3px;
+		bottom: 3px;
+		background-color: white;
+		-webkit-transition: .15s;
+		transition: .15s;
+	}
+
+	input:checked + .slider {
+		background-color: #2196F3;
+	}
+
+	input:focus + .slider {
+		box-shadow: 0 0 1px #2196F3;
+	}
+
+	input:checked + .slider:before {
+		-webkit-transform: translateX(13px);
+		-ms-transform: translateX(13px);
+		transform: translateX(13px);
+	}
+
+	.slider.round {
+		border-radius: 17px;
+	}
+
+	.slider.round:before {
+		border-radius: 50%;
+	}
+
 	</style>
 </head>
 <body onload="init()">
@@ -166,13 +227,20 @@
 	<canvas id="field"></canvas>
 	<div class="buttonContainer">
 		<button onclick="addPoint()">Add Point</button>
-		<!-- <button onclick="update()">Update</button> -->
 		<button onclick="exportData()">Download</button>
 		<button onclick="showData()">Display Path</button>
 		<button onclick="importData()">Import</button>
 		<button onclick="flipField()">Flip Field</button>
 		<button onclick="reset()">Reset</button>
-		<span style="font-size: 15px; float: right;">Is reversed: <input type="checkbox" id="isReversed"></span>
+		<span id="checkboxes">
+			Java &nbsp; 
+			<label class="switch">
+				<input type="checkbox" id="useKotlin" checked />
+				<span class="slider round"></span>
+			</label>
+			 &nbsp; Kotlin &nbsp; | &nbsp; 
+			Reversed <input type="checkbox" id="isReversed" />
+		</span>
 	</div>
 	<table>
 		<thead>
