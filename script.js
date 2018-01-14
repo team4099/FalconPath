@@ -242,15 +242,17 @@ function init() {
     if (cached !== null) {
     	waypoints = JSON.parse(cached);
     	$("tbody").empty();
+    	var first = true;
     	for (let waypoint of waypoints) {
     		$("tbody").append("<tr>"
 				+"<td><input value='"+waypoint.position.x+"'></td>"
 				+"<td><input value='"+waypoint.position.y+"'></td>"
 				+"<td><input value='"+waypoint.radius+"'></td>"
 				+"<td><input value='"+waypoint.speed+"'></td>"
-				+"<td class='comments'><input placeholder='Comments'>"+waypoint.comment+"</input></td>"
-				+"<td><button onclick='$(this).parent().parent().remove();update()'>Delete</button></td></tr>"
+				+"<td class='comments'><input placeholder='Comments' value='"+waypoint.comment+"' /></td>"
+				+(first?"":"<td><button onclick='$(this).parent().parent().remove();update()'>Delete</button></td></tr>")
 			);
+			first = false;
     	}
     }
     $('input').bind("change paste keyup", function() {
