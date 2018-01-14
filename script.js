@@ -237,7 +237,22 @@ function init() {
         update();
     }
     ImageFlipped = new Image();
-    imageFlipped.src = 'fieldflipped.png';
+    ImageFlipped.src = 'fieldflipped.png';
+    var cached = localStorage.getItem("waypoints");
+    if (cached !== null) {
+    	waypoints = JSON.parse(cached);
+    	$("tbody").empty();
+    	for (let waypoint of waypoints) {
+    		$("tbody").append("<tr>"
+				+"<td><input value='"+waypoint.position.x+"'></td>"
+				+"<td><input value='"+waypoint.position.y+"'></td>"
+				+"<td><input value='"+waypoint.radius+"'></td>"
+				+"<td><input value='"+waypoint.speed+"'></td>"
+				+"<td class='comments'><input placeholder='Comments'>"+waypoint.comment+"</input></td>"
+				+"<td><button onclick='$(this).parent().parent().remove();update()'>Delete</button></td></tr>"
+			);
+    	}
+    }
     $('input').bind("change paste keyup", function() {
 		console.log("change");
 		clearTimeout(wto);
@@ -306,6 +321,7 @@ function update() {
         var comment = ( $($($(this).children()).children()[4]).val() )
         waypoints.push(new Waypoint(new Translation2d(x,y), speed, radius, comment));
     });
+    localStorage.setItem("waypoints", JSON.stringify(waypoints));
     drawPoints();
     drawRobot();
 }
