@@ -46,7 +46,7 @@ class Translation2d {
 	}
 
 	draw(color) {
-		color = color || "#cf5353";
+		color = color || "#2c8244";
 		ctx.beginPath();
 		ctx.arc(this.drawX, this.drawY, pointRadius, 0, 2 * Math.PI, false);
 		ctx.fillStyle = color;
@@ -229,14 +229,14 @@ function init() {
     ctx.canvas.width = width;
     ctx.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle="#CF5353";
+    ctx.fillStyle="#FF0000";
     image = new Image();
     image.src = 'field.png';
     image.onload = function(){
         ctx.drawImage(image, 0, 0, width, height);
         update();
     }
-    imageFlipped = new Image();
+    ImageFlipped = new Image();
     imageFlipped.src = 'fieldflipped.png';
     $('input').bind("change paste keyup", function() {
 		console.log("change");
@@ -249,7 +249,7 @@ function init() {
 
 function clear() {
     ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle="#CF5353";
+    ctx.fillStyle="#ff0000";
     if(flipped)
     	ctx.drawImage(imageFlipped, 0, 0, width, height);
     else
@@ -313,10 +313,12 @@ function update() {
 function drawRobot() {
 	if(waypoints.length > 1) {
 		var deltaStart = Translation2d.diff(waypoints[0].position, waypoints[1].position);
-		drawRotatedRect(waypoints[0].position, robotHeight, robotWidth, deltaStart.angle, getColorForSpeed(waypoints[1].speed));
-
 		var deltaEnd = Translation2d.diff(waypoints[waypoints.length-2].position, waypoints[waypoints.length-1].position);
+		drawRotatedRect(waypoints[0].position, robotHeight, robotWidth, deltaStart.angle, getColorForSpeed(waypoints[1].speed));
 		drawRotatedRect(waypoints[waypoints.length-1].position, robotHeight, robotWidth, deltaEnd.angle, getColorForSpeed(0));
+	}
+	else {
+		drawRotatedRect(waypoints[0].position, robotHeight, robotWidth, 0, getColorForSpeed(0));
 	}
 }
 
