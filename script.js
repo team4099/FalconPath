@@ -502,6 +502,21 @@ function closeModal() {
 	}, 500);
 }
 
+function reset() {
+	clear();
+	waypoints = [];
+	$("tbody").empty();
+	localStorage.removeItem("waypoints");
+	$("tbody").append("<tr>"
+		+"<td><input value='21'></td>"
+		+"<td><input value='70'></td>"
+		+"<td><input value='0'></td>"
+		+"<td><input value='60'></td>"
+		+"<td class='comments'><input placeholder='Comments' /></td>"
+	);
+	update();
+}
+
 var flipped = false;
 function flipField() {
 	flipped = !flipped;
