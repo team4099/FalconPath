@@ -91,6 +91,7 @@ class Waypoint {
 		this.speed = speed;
 		this.radius = radius;
 		this.comment = comment;
+		this.dragging = false;
 	}
 
 	draw() {
@@ -221,11 +222,25 @@ class Arc {
 	}
 }
 
-
-function init() { 
+function init() {
+	var field = $("#field");
 	$("#field").css("width", width + "px");
 	$("#field").css("height", height + "px");
-	ctx = document.getElementById('field').getContext('2d')
+	$("#field").mousedown(function(e) {
+		for (let waypoint of waypoints) {
+			console.log(Math.hypot(e.offsetX - waypoint.position.drawX, e.offsetY - waypoint.position.drawY));
+			if (Math.hypot(e.offsetX - waypoint.position.drawX, e.offsetY - waypoint.position.drawY) < 2 * pointRadius) {
+				waypoint.dragging = true;
+				break;
+			}
+		}
+	});
+	$("#field").mouseup(function(e) {
+		waypoints.forEach(function(waypoint) {
+			waypoint.dragging = false;
+		});
+	});
+	ctx = $("#field")[0].getContext('2d')
     ctx.canvas.width = width;
     ctx.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
@@ -250,7 +265,7 @@ function init() {
 				+"<td><input value='"+waypoint.radius+"'></td>"
 				+"<td><input value='"+waypoint.speed+"'></td>"
 				+"<td class='comments'><input placeholder='Comments' value='"+waypoint.comment+"' /></td>"
-				+(first?"":"<td><button onclick='$(this).parent().parent().remove();update()'>Delete</button></td></tr>")
+				+(first?"":"<td><button onclick='$(this).parent().parent().remove();update()'>✕</button></td></tr>")
 			);
 			first = false;
     	}
@@ -295,7 +310,7 @@ function addPoint() {
 		+"<td><input value='0'></td>"
 		+"<td><input value='60'></td>"
 		+"<td class='comments'><input placeholder='Comments'></td>"
-		+"<td><button onclick='$(this).parent().parent().remove();update()'>Delete</button></td></tr>"
+		+"<td><button onclick='$(this).parent().parent().remove();update()'>✕</button></td></tr>"
 	);
 	update();
 	$('input').unbind("change paste keyup");
