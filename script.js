@@ -9,6 +9,7 @@ var robotHeight = 33 + 2 * 4; //inches
 var pointRadius = 5;
 var turnRadius = 30;
 var kEpsilon = 1E-9;
+var dragIndex = -1;
 var image;
 var imageFlipped;
 var wto;
@@ -91,7 +92,6 @@ class Waypoint {
 		this.speed = speed;
 		this.radius = radius;
 		this.comment = comment;
-		this.dragging = false;
 	}
 
 	draw() {
@@ -224,23 +224,30 @@ class Arc {
 
 function init() {
 	var field = $("#field");
-	$("#field").css("width", width + "px");
-	$("#field").css("height", height + "px");
-	$("#field").mousedown(function(e) {
-		for (let waypoint of waypoints) {
-			console.log(Math.hypot(e.offsetX - waypoint.position.drawX, e.offsetY - waypoint.position.drawY));
+	field.css("width", width + "px");
+	field.css("height", height + "px");
+	field.mousedown(function(e) {
+		var waypoint;
+		for (var i = 0; i < waypoints.length; i++) {
+			waypoint = waypoints[i];
 			if (Math.hypot(e.offsetX - waypoint.position.drawX, e.offsetY - waypoint.position.drawY) < 2 * pointRadius) {
-				waypoint.dragging = true;
+				dragIndex = i;
 				break;
 			}
 		}
 	});
-	$("#field").mouseup(function(e) {
-		waypoints.forEach(function(waypoint) {
-			waypoint.dragging = false;
-		});
+	field.mouseup(function(e) {
+		dragIndex = -1;
 	});
-	ctx = $("#field")[0].getContext('2d')
+	field.mousemove(function(e) {
+		if (dragIndex !== -1) {
+			var row = $("tbody tr").eq(dragIndex);
+			row.find("td input").eq(0).val(Math.round(e.offsetX * (fieldWidth / width)));
+			row.find("td input").eq(1).val(Math.round((height - e.offsetY) * (fieldHeight / height)));
+			update();
+		}
+	});
+	ctx = field[0].getContext('2d')
     ctx.canvas.width = width;
     ctx.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
@@ -251,8 +258,8 @@ function init() {
         ctx.drawImage(image, 0, 0, width, height);
         update();
     }
-    ImageFlipped = new Image();
-    ImageFlipped.src = 'fieldflipped.png';
+    imageFlipped = new Image();
+    imageFlipped.src = 'fieldflipped.png';
     var cached = localStorage.getItem("waypoints");
     if (cached !== null) {
     	waypoints = JSON.parse(cached);
