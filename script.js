@@ -86,6 +86,13 @@ class Translation2d {
 	}
 }
 
+function ns(n) {
+	if (Number.isInteger(n)) {
+		return n.toFixed(1);
+	}
+	return n;
+}
+
 class Waypoint {
 	constructor(position, speed, radius, comment) {
 		this.position = position;
@@ -100,7 +107,7 @@ class Waypoint {
 
 	toString() {
 		var comment = (this.comment.length > 0) ? " //" + this.comment : "";
-		return "sWaypoints.add(Waypoint("+this.position.x+","+this.position.y+","+this.radius+","+this.speed+"));" + comment;
+		return "sWaypoints.add(Waypoint("+ns(this.position.x)+","+ns(this.position.y)+","+ns(this.radius)+","+ns(this.speed)+"));" + comment;
 	}
 }
 
@@ -459,35 +466,36 @@ function importData() {
 
 function getDataString() {
 	var title = ($("#title").val().length > 0) ? $("#title").val() : "UntitledPath";
+	var kotlin = $("#useKotlin").is(':checked');
 	var pathInit = "";
 	for(var i=0; i<waypoints.length; i++) {
 		pathInit += "        " + waypoints[i].toString() + "\n";
 	}
-	var startPoint = "Translation2d(" + waypoints[0].position.x + ", " + waypoints[0].position.y + ")";
+	var startPoint = "Translation2"+ (kotlin?"D":"d") + "(" + ns(waypoints[0].position.x) + ", " + ns(waypoints[0].position.y) + ")";
 	var importStr = "WAYPOINT_DATA: " + JSON.stringify(waypoints);
 	var isReversed = $("#isReversed").is(':checked');
-	if ($("#useKotlin").is(':checked')) {
+	if (kotlin) {
 		var str = `package org.usfirst.frc.team4099.paths
 
 import java.util.ArrayList
 
-import org.usfirst.frc.team4099.paths.PathBuilder.Waypoint
+import org.usfirst.frc.team4099.paths.PathBuilder.Companion.Waypoint
 import org.usfirst.frc.team4099.lib.util.control.Path
-import org.usfirst.frc.team4099.lib.util.math.RigidTransform2d
-import org.usfirst.frc.team4099.lib.util.math.Rotation2dx
-import org.usfirst.frc.team4099.lib.util.math.Translation2d
+import org.usfirst.frc.team4099.lib.util.math.RigidTransform2D
+import org.usfirst.frc.team4099.lib.util.math.Rotation2D
+import org.usfirst.frc.team4099.lib.util.math.Translation2D
 
 class ${title} : PathContainer {
     
     override fun buildPath() : Path {
-        sWaypoints : ArrayList<Waypoint> = ArrayList<Waypoint>()
+        var sWaypoints : ArrayList<Waypoint> = ArrayList<Waypoint>()
 ${pathInit}
         return PathBuilder.buildPathFromWaypoints(sWaypoints)
     }
     
-    override fun getStartPose() : RigidTransform2d = RigidTransform2d(${startPoint}, Rotation2d.fromDegrees(180.0))
+    override fun getStartPose() : RigidTransform2D = RigidTransform2D(${startPoint}, Rotation2D.fromDegrees(180.0))
 
-    override fun isReversed() : boolean = ${isReversed}
+    override fun isReversed() : Boolean = ${isReversed}
 	// ${importStr}
 	// IS_REVERSED: ${isReversed}
 	// FILE_NAME: ${title}
